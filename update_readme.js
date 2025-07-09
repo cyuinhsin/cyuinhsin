@@ -42,6 +42,47 @@ async function getLastCommitAndYearCount() {
   return { lastCommit, count };
 }
 
+// 新增: 获取当前 IP 的城市
+async function getLocation() {
+  try {
+    const res = await fetch("http://ip-api.com/json");
+    if (!res.ok) throw new Error("Failed to fetch location");
+    const data = await res.json();
+    return data.city && data.country
+      ? `${data.city}, ${data.country}`
+      : "Unknown";
+  } catch (e) {
+    return "Unknown";
+  }
+}
+
+// 新增: 获取天气
+async function getWeather(location) {
+  try {
+    // wttr.in 支持城市英文名，返回纯文本天气摘要
+    const res = await fetch(
+      `https://wttr.in/${encodeURIComponent(location)}?format=1`
+    );
+    if (!res.ok) throw new Error("Failed to fetch weather");
+    const text = await res.text();
+    return text.trim();
+  } catch (e) {
+    return "Unknown";
+  }
+}
+
+// 获取当前时间字符串
+function getCurrentTimeString() {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  const hh = String(now.getHours()).padStart(2, "0");
+  const min = String(now.getMinutes()).padStart(2, "0");
+  const ss = String(now.getSeconds()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
+}
+
 async function main() {
   let readme = fs.readFileSync(README_PATH, "utf-8");
   // 年龄
@@ -64,6 +105,27 @@ async function main() {
   } catch (e) {
     console.error("Failed to update commit info:", e);
   }
+  // 新增: 地点和天气
+  try {
+    const location = await getLocation();
+    const weather = await getWeather(location);
+    readme = readme.replace(
+      /<!--LOCATION_START-->.*?<!--LOCATION_END-->/,
+      `<!--LOCATION_START-->${location}<!--LOCATION_END-->`
+    );
+    readme = readme.replace(
+      /<!--WEATHER_START-->.*?<!--WEATHER_END-->/,
+      `<!--WEATHER_START-->${weather}<!--WEATHER_END-->`
+    );
+  } catch (e) {
+    console.error("Failed to update location/weather:", e);
+  }
+  // 新增: 更新时间
+  const updatedTime = getCurrentTimeString();
+  readme = readme.replace(
+    /<!--UPDATED_TIME_START-->.*?<!--UPDATED_TIME_END-->/,
+    `<!--UPDATED_TIME_START-->${updatedTime}<!--UPDATED_TIME_END-->`
+  );
   fs.writeFileSync(README_PATH, readme, "utf-8");
 }
 
