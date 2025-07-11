@@ -5,6 +5,11 @@
      |:  1   |         |_______|_|   |_|   |______|
      |::.. . |
      `-------'
+todo:
+GitHub Community: Allowing github-actions bot to push to protected branch
+ad-m/github-push-action#96
+Everything I Know: Solution to Process completed with exit code 128 on GitHub Actions
+这些讨论中也有一样的问题，即使用 classic PAT，profile 仓库的 Actions 自动 push 依然 403，而普通仓库则可以。
 
 cyuinhsin@github
 ────────────────────────────────────────────────────
@@ -39,4 +44,5 @@ Lines of Code: 123,456
 
 ────────────────────────────────────────────────────
 Last updated: <!--UPDATED_TIME_START-->这里会被自动替换<!--UPDATED_TIME_END-->
-****
+
+---
