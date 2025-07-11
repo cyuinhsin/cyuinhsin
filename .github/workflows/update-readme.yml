@@ -30,4 +30,6 @@ jobs:
           git add README.md
           git commit -m 'chore: update README.md by GitHub Actions' || echo 'No changes to commit'
           git remote set-url origin https://cyuinhsin:${PAT}@github.com/cyuinhsin/cyuinhsin.git
+          git remote -v
+          echo "PAT starts with: ${PAT:0:8}"
           git push origin main
